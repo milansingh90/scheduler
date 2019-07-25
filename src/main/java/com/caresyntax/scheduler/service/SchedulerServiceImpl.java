@@ -1,6 +1,5 @@
 package com.caresyntax.scheduler.service;
 
-import com.caresyntax.scheduler.exception.GeneralException;
 import com.caresyntax.scheduler.exception.NonscheduledProcedureException;
 import com.caresyntax.scheduler.exception.NotFoundException;
 import com.caresyntax.scheduler.model.dataModel.Doctor;
@@ -21,6 +20,7 @@ import com.caresyntax.scheduler.repo.StudyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,10 +41,13 @@ public class SchedulerServiceImpl implements ScheduleService{
 
     public static final String UPDATE_STATUS_MESSAGE = "Procedure Status updated successfully";
     public static final String ADD_PATIENT_SUCCESS_MESSAGE = "AddPatientRequest details saved successfully";
+    public static final String AVAILABLE = "AVAILABLE";
+    public static final String UNAVAILABLE = "UNAVAILABLE";
 
     @Override
     public AddPatientResponse addPatient(AddPatientRequest addPatientRequest) {
 
+        //Creating a Patient Object and saving it to db.
         Patient patient = new Patient();
         patient.setName(addPatientRequest.getName());
         patient.setDayOfBirth(addPatientRequest.getDayOfBirth());
@@ -70,6 +73,7 @@ public class SchedulerServiceImpl implements ScheduleService{
            throw new NotFoundException("AddPatientRequest record unavailable for the given patient id.");
         }
 
+        //Getting the list of available doctors and rooms
         List<Doctor> doctorList = doctorRepository.findByOccupancyStatus();
         List<Room> roomList = roomRepository.findByOccupancyStatus();
 
@@ -92,14 +96,16 @@ public class SchedulerServiceImpl implements ScheduleService{
 
         Study studyResponse = studyRepository.save(study);
 
+        //Updating status of doctor and room to unavailable after procedure scheduled
         Room room = roomList.get(0);
         Doctor doctor = doctorList.get(0);
-        room.setOccupancyStatus("UNAVAILABLE");
-        doctor.setOccupancyStatus("UNAVAILABLE");
+        room.setOccupancyStatus(UNAVAILABLE);
+        doctor.setOccupancyStatus(UNAVAILABLE);
 
         roomRepository.save(room);
         doctorRepository.save(doctor);
 
+        //Creating the response object for schedule procedure
         scheduleProcedureResponse.setStatusId(studyResponse.getId());
         scheduleProcedureResponse.setStatus(studyResponse.getStatus());
         scheduleProcedureResponse.setDoctorName(studyResponse.getDoctor().getName());
@@ -114,26 +120,24 @@ public class SchedulerServiceImpl implements ScheduleService{
         Study studyResponse = new Study();
         UpdateStatusResponse updateStatusResponse = new UpdateStatusResponse();
 
+        //Checking for study by Id.
         List<Study> studyList = studyRepository.findByStatusId(updateStatusRequest.getStatusId());
         if(studyList.size()>0) {
-            //if(studyList.size()==1) {
-                Study study = studyList.get(0);
-                study.setStatus(updateStatusRequest.getStatus());
-                studyResponse = studyRepository.save(study);
-           // } else {
-           //     throw new GeneralException("More than one response based on study Id. Please check study Id.");
-           // }
+            Study study = studyList.get(0);
+            study.setStatus(updateStatusRequest.getStatus());
+            studyResponse = studyRepository.save(study);
         } else {
             throw new NotFoundException("Study record not available for the given study id");
         }
 
+        //if status updated to finished. Doctor and room are set to available
         if(studyResponse.getStatus()== StatusEnum.FINISHED){
             Room room = studyList.get(0).getRoom();
-            room.setOccupancyStatus("AVAILABLE"); // create a constant for available and unavailable
+            room.setOccupancyStatus(AVAILABLE);
             roomRepository.save(room);
 
             Doctor doctor = studyList.get(0).getDoctor();
-            doctor.setOccupancyStatus("AVAILABLE");
+            doctor.setOccupancyStatus(AVAILABLE);
             doctorRepository.save(doctor);
         }
 

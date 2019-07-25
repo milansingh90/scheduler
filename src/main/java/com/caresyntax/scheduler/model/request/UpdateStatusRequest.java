@@ -3,13 +3,20 @@ package com.caresyntax.scheduler.model.request;
 import com.caresyntax.scheduler.model.dataModel.Enum.StatusEnum;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 public class UpdateStatusRequest {
 
 
     @JsonProperty
+    @NotNull
+    @NotEmpty
     private Long statusId;
 
     @JsonProperty
+    @NotNull
+    @NotEmpty
     private StatusEnum status;
 
     public UpdateStatusRequest() {

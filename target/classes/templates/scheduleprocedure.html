@@ -1,0 +1,24 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Schedule Procedure</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+<h1>Schedule Procedure</h1>
+<form action="#" th:action="@{/scheduleprocedure}" th:object="${scheduleprocedure}" method="post">
+    <p>PatientId:  <input type="text" th:field="*{patientId}" /></p>
+    <p>Description: <input type="text" th:field="*{description}" /></p>
+    <p>Status:  <select th:field="*{status}">
+        <option th:each="status : ${T(com.caresyntax.scheduler.model.dataModel.Enum.StatusEnum).values()}"
+                th:value="${status}"
+                th:text="${status}"
+               >
+        </option>
+    </select></p>
+    <p>Planned Start Time: <input type="date" th:field="*{plannedStartTime}" /></p>
+    <p>Estimated End Time: <input type="date" th:field="*{estimatedEndTime}" /></p>
+    <p><input type="submit" value="Submit" /> <input type="reset" value="Reset" /></p>
+</form>
+</body>
+</html>

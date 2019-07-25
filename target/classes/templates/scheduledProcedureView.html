@@ -1,0 +1,15 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Schedule Procedure</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+<h1>Schedule Procedure Response</h1>
+<p th:text="'Study Id: ' + ${statusId}" />
+<p th:text="'Status: ' + ${status}" />
+<p th:text="'Doctor name: ' + ${doctorName}" />
+<p th:text="'Room: ' + ${room}" />
+<a href="/scheduleprocedure">Schedule another procedure</a>
+</body>
+</html>

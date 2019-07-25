@@ -5,25 +5,32 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 public class ScheduleProcedureRequest {
 
     @JsonProperty("patientId")
+    @NotNull
     private Long patientId;
 
     @JsonProperty("description")
+    @NotNull
+    @NotEmpty
     private String description;
 
     @JsonProperty("status")
+    @NotNull
     private StatusEnum status;
 
     @JsonProperty("plannedStartTime")
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="CEST")
+    @JsonFormat(pattern="yyyy-MM-dd",timezone="CEST")
+    @NotNull
     private Date plannedStartTime;
 
     @JsonProperty("estimatedEndTime")
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="CEST")
+    @JsonFormat(pattern="yyyy-MM-dd",timezone="CEST")
     private Date estimatedEndTime;
 
     public ScheduleProcedureRequest() {
